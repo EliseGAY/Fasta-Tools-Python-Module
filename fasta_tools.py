@@ -68,7 +68,7 @@ def split_fasta(fasta_file, nb_seq):
             f = str(nom)
             filin = open(f, "w")
             filin.write(seq)
-            compteur = 0     
+            compteur = 0
     fasta_file.close()
     filin.close()
 
@@ -83,8 +83,8 @@ def fasta_dict(fasta_file):
     Usage
     ------
     Create dictionnary of Key=sequence_ID and value=Sequences
-    Launch the function with 1 argument : yourfile.fasta 
-    Python verion 3.6
+    Launch the function with 1 argument : yourfile.fasta
+    Python verion 2.7
 
     Arguments
     ---------
@@ -107,16 +107,15 @@ def fasta_dict(fasta_file):
     fasta_file = open(fasta_file, "r")
 
     for ligne in fasta_file:
+        print(ligne)
         ligne = ligne.replace("\n", "")
         if re.search('^>', ligne):
-            nom=ligne[-1:]
+            nom=ligne[1:]
             seq = []
-            seq.append(join_seq)
         else :
             seq.append(ligne)
             join_seq = "".join(seq)
             dico_fasta[nom] = join_seq
-
     return dico_fasta
 
 #------------------------#
@@ -125,7 +124,7 @@ def fasta_dict(fasta_file):
 #------------------------#
 #------------------------#
 
-def Select_Seq(fasta_file, ID_list):
+def Select_Seq(fasta_file, ID_list, output_name):
     """
     Usage
     ------
@@ -137,6 +136,7 @@ def Select_Seq(fasta_file, ID_list):
     ---------
     fasta.file : PATH/to_your/fasta.file
     ID_list : ["ID1", "ID2"] list of string
+    output_name : "name.fasta", string
 
     command line
     -------------
@@ -149,25 +149,151 @@ def Select_Seq(fasta_file, ID_list):
     #----------------------------#
     # read and initiate variable
     #----------------------------#
-    
+
     # format ID string, remove '\n'
     ID_final=[]
     for ID in ID_list:
         ID_final.append(ID.replace("\n", ""))
-
     print ("your list Id contains",len(ID_final),"ID")
 
     # creation fichier fasta avec les id fournis
-    fasta = file("subset.fasta", "w")
+    fasta = open(str(output_name), "w")
     # create dict from fasta file
     dico_fasta=fasta_dict(fasta_file)
     for i in ID_final:
-        if dico_fasta.has_key(i):
-           fasta.write(i)
+        if i in dico_fasta.keys():
+           fasta.write(">"+i)
            fasta.write("\n")
            fasta.write(dico_fasta[i])
            fasta.write("\n")
     fasta.close()
+
+
+#-------------------------------------#
+#-------------------------------------#
+# Append name in fasta file
+#-------------------------------------#
+#-------------------------------------#
+
+def add_fasta_name(fasta_file, name_file, output_name):
+    """
+    Usage
+    ------
+    Add attribute to fasta ID and return fasta file with complete ID
+    Launch the function with 2 arguments : yourfile.fasta , ID_file
+    Avoid redundancy : if an ID in the first fasta file is present in several new_ID only
+    the first occurence is selected.
+    In the case of same exon coordinates present in several transcript ID for instance
+
+    Python verion 3.6 / 2.7
+
+    Method :
+    --------
+    search each subtring of the current fasta ID in a list of new ID.
+    If subtring exist in new ID it create an new element in dictionnary  {name_seq : seq}
+    Write a new fasta file with complete seq name
+
+    Arguments
+    ---------
+    fasta.file : PATH/to_your/fasta.file
+    ID_list : PATH/to_your/ID_file (one name in each line)
+    output_name : "name.fasta", string
+
+    command line
+    -------------
+    Fasta_Tools.add_fasta_name(fasta.file, ID_file, output_name)
+
+    output : Fasta file written in your directory with same sequence but new ID
+    -----
+    """
+
+    #----------------------------#
+    # read and initiate variable
+    #----------------------------#
+
+    # create dictionary of all seqeunce with their ID
+    dict_seq=fasta_dict(fasta_file)
+    # initiate a new dict
+    dict_full={}
+
+    # read the new ID file
+    full_name_file=open(name_file, 'r')
+    full_name_lines=full_name_file.readlines()
+    print ("your list of new ID contains",len(full_name_lines),"ID")
+
+    # initiate seq name
+    idx_rep="none"
+
+    #------------------------------------------------#
+    # get first index in full_name list contains keys
+    #------------------------------------------------#
+    for key in dict_seq.keys():
+        idx_rep="none"
+        for full_ID in full_name_lines :
+            if str(key) in str(full_ID) and idx_rep=="none" :
+                idx_rep="yes"
+                dict_full[full_ID]=dict_seq[key]
+                break
+            else:
+                continue
+
+    print("new dict contains",len(dict_full),"values")
+
+    # write new fasta file
+    fasta_out=open(str(output_name), "w")
+    for key in dict_full.keys():
+        fasta_out.write(key)
+        fasta_out.write(dict_full[key])
+        fasta_out.write('\n')
+
+    fasta_out.close()
+#-------------------------------------#
+#-------------------------------------#
+# Remove duplicates value (but uniq key)
+# in dicionnary
+#-------------------------------------#
+#-------------------------------------#
+
+def remove_dup(fasta_file, output_fasta):
+    """
+    Usage
+    ------
+    Remove dupicated nucleiq seqeuence in fasta file
+    Example : exon file with same sequence but annotated in different transcript variant in the ">ID"
+    Launch the function with 1 argument : yourfile.fasta
+    Dependency : fasta_dict(fasta_file) function
+    Python verion 2.7
+
+    Warnings
+    --------
+    If your sequences have, by chance, the same size and are composed only of "N" or have the same sequences but are not from redundancy, they will be discarded too
+
+    Arguments
+    ---------
+    fasta.file : PATH/to_your/fasta.file
+
+    command line
+    -------------
+    Fasta_Tools.remove_dup(fasta.file, output_fasta.file)
+
+    output : Fasta file with the first occurence of each duplicated sequences only
+    --------
+    """
+    # initiate an empty dictionnary
+    result = {}
+    # create a dictionnary for your fasta file
+    dict_seq=fasta_dict(fasta_file)
+
+    # loop on your full dict and write the key, value in the empty one only if the value is not already present
+    for key,value in dict_seq.items():
+        if value not in result.values():
+            result[key] = value
+
+    # write the new dictionnary with uniq values in a new fasta file
+    fastout=open(str(output_fasta), 'w')
+    for key in result.keys():
+        fastout.write(">"+key+"\n"+result[key]+"\n")
+    fastout.close()
 
 #-------------------------------------#
 #-------------------------------------#
@@ -182,12 +308,12 @@ def get_N_percent(fasta_file):
     Count number of "N" or "n" character in fast sequence
     Launch the function with 1 argument : yourfile.fasta
     Dependency : fasta_dict(fasta_file) function
-    Python verion 3.6
+    Python verion 2.7
 
     Arguments
     ---------
     fasta.file : PATH/to_your/fasta.file
-    
+
     command line
     -------------
     Fasta_Tools.get_N_percent(fasta.file)
@@ -199,16 +325,16 @@ def get_N_percent(fasta_file):
     #----------------------------#
     # read and initiate variable
     #----------------------------#
-    
+
     # create dictionary of all seqeunce with their ID
     dict_seq=fasta_dict(fasta_file)
-    
+
     #----------------------------#
     # Compute N count and percent
     #----------------------------#
-    
-    for id in dict_seq.keys():
-        N_count=int(dict[id].upper().count("N"))
-        Seq_len=float(length(dict[id]))
+
+    for id in dict_seq:
+        N_count=int(dict_seq[id].upper().count("N"))
+        Seq_len=float(len(dict_seq[id]))
         Percent=float(N_count)/float(Seq_len)*100
-        print(id," ",Percent,"\n")
+        print(id,Percent)
