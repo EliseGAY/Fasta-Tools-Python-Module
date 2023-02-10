@@ -3,6 +3,14 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
 
+# """ 
+# Author : Elise Gay (EPHE, Mnhn)
+# 2022
+# Please inform the author before sharing
+
+# Modules to parse and format fasta file
+# """
+
 #------------------------#
 # Import modules
 #------------------------#
@@ -107,7 +115,6 @@ def fasta_dict(fasta_file):
     fasta_file = open(fasta_file, "r")
 
     for ligne in fasta_file:
-        print(ligne)
         ligne = ligne.replace("\n", "")
         if re.search('^>', ligne):
             nom=ligne[1:]
@@ -116,6 +123,7 @@ def fasta_dict(fasta_file):
             seq.append(ligne)
             join_seq = "".join(seq)
             dico_fasta[nom] = join_seq
+
     return dico_fasta
 
 #------------------------#
@@ -305,10 +313,10 @@ def get_N_percent(fasta_file):
     """
     Usage
     ------
-    Count number of "N" or "n" character in fast sequence
+    Count number of "N" or "n" character in fasta sequence
     Launch the function with 1 argument : yourfile.fasta
     Dependency : fasta_dict(fasta_file) function
-    Python verion 2.7
+    Python verion 2.7 + 3.6
 
     Arguments
     ---------
@@ -328,7 +336,6 @@ def get_N_percent(fasta_file):
 
     # create dictionary of all seqeunce with their ID
     dict_seq=fasta_dict(fasta_file)
-
     #----------------------------#
     # Compute N count and percent
     #----------------------------#
@@ -337,4 +344,4 @@ def get_N_percent(fasta_file):
         N_count=int(dict_seq[id].upper().count("N"))
         Seq_len=float(len(dict_seq[id]))
         Percent=float(N_count)/float(Seq_len)*100
-        print(id,Percent)
+        print(id+" "+str(Percent))
