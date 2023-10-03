@@ -3,14 +3,6 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
 
-# """ 
-# Author : Elise Gay (EPHE, Mnhn)
-# 2022
-# Please inform the author before sharing
-
-# Modules to parse and format fasta file
-# """
-
 #------------------------#
 # Import modules
 #------------------------#
@@ -76,7 +68,7 @@ def split_fasta(fasta_file, nb_seq):
             f = str(nom)
             filin = open(f, "w")
             filin.write(seq)
-            compteur = 0
+            compteur = 0     
     fasta_file.close()
     filin.close()
 
@@ -91,7 +83,7 @@ def fasta_dict(fasta_file):
     Usage
     ------
     Create dictionnary of Key=sequence_ID and value=Sequences
-    Launch the function with 1 argument : yourfile.fasta
+    Launch the function with 1 argument : yourfile.fasta 
     Python verion 2.7
 
     Arguments
@@ -117,13 +109,13 @@ def fasta_dict(fasta_file):
     for ligne in fasta_file:
         ligne = ligne.replace("\n", "")
         if re.search('^>', ligne):
-            nom=ligne[1:]
+            nom=ligne[1:] 
             seq = []
         else :
             seq.append(ligne)
             join_seq = "".join(seq)
-            dico_fasta[nom] = join_seq
-
+            dico_fasta[nom] = join_seq 
+    
     return dico_fasta
 
 #------------------------#
@@ -144,7 +136,7 @@ def Select_Seq(fasta_file, ID_list, output_name):
     ---------
     fasta.file : PATH/to_your/fasta.file
     ID_list : ["ID1", "ID2"] list of string
-    output_name : "name.fasta", string
+    output_name : "name.fasta", string 
 
     command line
     -------------
@@ -157,7 +149,7 @@ def Select_Seq(fasta_file, ID_list, output_name):
     #----------------------------#
     # read and initiate variable
     #----------------------------#
-
+    
     # format ID string, remove '\n'
     ID_final=[]
     for ID in ID_list:
@@ -187,17 +179,17 @@ def add_fasta_name(fasta_file, name_file, output_name):
     """
     Usage
     ------
-    Add attribute to fasta ID and return fasta file with complete ID
+    Add attribute to fasta ID and return fasta file with complete ID 
     Launch the function with 2 arguments : yourfile.fasta , ID_file
     Avoid redundancy : if an ID in the first fasta file is present in several new_ID only
     the first occurence is selected.
     In the case of same exon coordinates present in several transcript ID for instance
 
     Python verion 3.6 / 2.7
-
-    Method :
+    
+    Method : 
     --------
-    search each subtring of the current fasta ID in a list of new ID.
+    search each subtring of the current fasta ID in a list of new ID. 
     If subtring exist in new ID it create an new element in dictionnary  {name_seq : seq}
     Write a new fasta file with complete seq name
 
@@ -221,7 +213,7 @@ def add_fasta_name(fasta_file, name_file, output_name):
 
     # create dictionary of all seqeunce with their ID
     dict_seq=fasta_dict(fasta_file)
-    # initiate a new dict
+    # initiate a new dict 
     dict_full={}
 
     # read the new ID file
@@ -246,7 +238,7 @@ def add_fasta_name(fasta_file, name_file, output_name):
                 continue
 
     print("new dict contains",len(dict_full),"values")
-
+    
     # write new fasta file
     fasta_out=open(str(output_name), "w")
     for key in dict_full.keys():
@@ -257,7 +249,7 @@ def add_fasta_name(fasta_file, name_file, output_name):
     fasta_out.close()
 #-------------------------------------#
 #-------------------------------------#
-# Remove duplicates value (but uniq key)
+# Remove duplicates value (but uniq key) 
 # in dicionnary
 #-------------------------------------#
 #-------------------------------------#
@@ -267,11 +259,11 @@ def remove_dup(fasta_file, output_fasta):
     Usage
     ------
     Remove dupicated nucleiq seqeuence in fasta file
-    Example : exon file with same sequence but annotated in different transcript variant in the ">ID"
+    Example : exon file with same sequence but annotated in different transcript variant in the ">ID" 
     Launch the function with 1 argument : yourfile.fasta
     Dependency : fasta_dict(fasta_file) function
     Python verion 2.7
-
+    
     Warnings
     --------
     If your sequences have, by chance, the same size and are composed only of "N" or have the same sequences but are not from redundancy, they will be discarded too
@@ -321,7 +313,7 @@ def get_N_percent(fasta_file):
     Arguments
     ---------
     fasta.file : PATH/to_your/fasta.file
-
+    
     command line
     -------------
     Fasta_Tools.get_N_percent(fasta.file)
@@ -333,13 +325,13 @@ def get_N_percent(fasta_file):
     #----------------------------#
     # read and initiate variable
     #----------------------------#
-
+    
     # create dictionary of all seqeunce with their ID
     dict_seq=fasta_dict(fasta_file)
     #----------------------------#
     # Compute N count and percent
     #----------------------------#
-
+    
     for id in dict_seq:
         N_count=int(dict_seq[id].upper().count("N"))
         Seq_len=float(len(dict_seq[id]))
