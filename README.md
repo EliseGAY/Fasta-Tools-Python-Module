@@ -26,7 +26,7 @@ import fasta_tools
 
 ##### example of one function used :
 
-'get help :'
+get help :
 
 help(fasta_tools.get_N_percent)
 
