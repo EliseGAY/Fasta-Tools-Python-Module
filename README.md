@@ -14,13 +14,16 @@ Functions are
 
 # Run modules on a ptyhon script :
 '''
-# -*- coding: utf-8 -*-
+##### -*- coding: utf-8 -*-
+
 import sys
+
 import os
 
 sys.path.append('PATH_TO/software/python_tools/')
+
 import fasta_tools
 
-# example of one function used :
+##### example of one function used :
 fasta_tools.get_N_percent("PATH_TO_YOUR_FILE")
 '''
