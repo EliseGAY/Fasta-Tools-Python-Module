@@ -167,10 +167,8 @@ def Select_Seq(fasta_file, ID_list, output_name):
             keys_select_list.append("".join(keys_select))
         else :
             print(i+" not found or found multiple times")
-    print(keys_select_list)
          
     for keys in keys_select_list :
-        print(keys)
         fasta.write(">"+keys)
         fasta.write("\n")
         fasta.write(dico_fasta[keys])
