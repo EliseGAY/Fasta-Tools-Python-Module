@@ -135,7 +135,7 @@ def Select_Seq(fasta_file, ID_list, output_name):
     Arguments
     ---------
     fasta.file : PATH/to_your/fasta.file
-    ID_list : ["ID1", "ID2"] list of string
+    ID_list : ["ID1", "ID2"] list of string (used as string pattern to search in fasta ID names)
     output_name : "name.fasta", string 
 
     command line
@@ -152,22 +152,30 @@ def Select_Seq(fasta_file, ID_list, output_name):
     
     # format ID string, remove '\n'
     ID_final=[]
+    keys_select_list=[]
     for ID in ID_list:
         ID_final.append(ID.replace("\n", ""))
     print ("your list Id contains",len(ID_final),"ID")
-
     # creation fichier fasta avec les id fournis
     fasta = open(str(output_name), "w")
     # create dict from fasta file
     dico_fasta=fasta_dict(fasta_file)
+    
     for i in ID_final:
-        if i in dico_fasta.keys():
-           fasta.write(">"+i)
-           fasta.write("\n")
-           fasta.write(dico_fasta[i])
-           fasta.write("\n")
+        keys_select=[x for x in dico_fasta.keys() if re.search(i,x)]
+        if len(keys_select) == 1 :
+            keys_select_list.append("".join(keys_select))
+        else :
+            print(i+" not found or found multiple times")
+    print(keys_select_list)
+         
+    for keys in keys_select_list :
+        print(keys)
+        fasta.write(">"+keys)
+        fasta.write("\n")
+        fasta.write(dico_fasta[keys])
+        fasta.write("\n")
     fasta.close()
-
 
 #-------------------------------------#
 #-------------------------------------#
