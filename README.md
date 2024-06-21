@@ -13,23 +13,23 @@ Functions are
 - Count number of "N" or "n" character in fasta sequence
 
 # Run modules on a ptyhon script :
-'''
-##### -*- coding: utf-8 -*-
-
-import sys
-
-import os
-
-sys.path.append('PATH_TO/software/python_tools/')
-
-import fasta_tools
-
-##### example of one function used :
-
-get help :
-
-help(fasta_tools.get_N_percent)
-
-fasta_tools.get_N_percent("PATH_TO_YOUR_FILE")
-
-'''
+        '''
+        ##### -*- coding: utf-8 -*-
+        
+        import sys
+        
+        import os
+        
+        sys.path.append('PATH_TO/software/python_tools/')
+        
+        import fasta_tools
+        
+        ##### example of one function used :
+        
+        get help :
+        
+        help(fasta_tools.get_N_percent)
+        
+        fasta_tools.get_N_percent("PATH_TO_YOUR_FILE")
+        
+        '''
